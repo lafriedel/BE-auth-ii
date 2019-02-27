@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
+const cors = require("cors");
 const knex = require("knex");
 const knexConfig = require("./knexfile");
 const bcrypt = require("bcryptjs");
@@ -14,6 +15,7 @@ const secret =
 
 server.use(helmet());
 server.use(express.json());
+server.use(cors());
 
 server.get("/", (req, res) => {
   res.status(200).send("Sanity check!");
