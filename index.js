@@ -68,7 +68,7 @@ server.post("/api/login", (req, res) => {
     }
 });
 
-server.get("/api/users", (req, res) => {
+server.get("/api/users", authorize, (req, res) => {
   db("users")
     .then(list => {
       res.status(200).json(list);
@@ -90,6 +90,22 @@ function generateToken(user) {
     };
 
     return jwt.sign(payload, secret, options);
+}
+
+function authorize(req, res, next) {
+    const token = req.headers.authorization;
+    if (token) {
+        jwt.verify(token, secret, (err, decodedToken) => {
+            if (err) {
+                res.status(401).json({error: "You are unauthorized."})
+            } else {
+                req.decodedJWT = decodedToken;
+                next();
+            }
+        })
+    } else {
+        res.status(401).json({error: "You are unauthorized."})
+    }
 }
 
 const port = process.env.PORT || 5000;
