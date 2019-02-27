@@ -58,7 +58,7 @@ server.post("/api/login", (req, res) => {
                 const token = generateToken(user);
                 res.status(200).json({message: `Welcome, ${user.username}!`, token});
             } else {
-                res.status(401).json({error: "Invalid credentials."})
+                res.status(401).json({error: "You shall not pass!"})
             }
         }).catch(err => {
             res.status(500).json({error: "There was an error logging in."});
@@ -97,14 +97,13 @@ function authorize(req, res, next) {
     if (token) {
         jwt.verify(token, secret, (err, decodedToken) => {
             if (err) {
-                res.status(401).json({error: "You are unauthorized."})
+                res.status(401).json({error: "You shall not pass!"})
             } else {
-                req.decodedJWT = decodedToken;
                 next();
             }
         })
     } else {
-        res.status(401).json({error: "You are unauthorized."})
+        res.status(401).json({error: "You shall not pass!"})
     }
 }
 
