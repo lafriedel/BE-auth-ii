@@ -49,7 +49,24 @@ server.post("/api/register", (req, res) => {
   }
 });
 
-server.post("/api/login", (req, res) => {});
+server.post("/api/login", (req, res) => {
+    let { username, password } = req.body;
+
+    if (username && password) {
+        db("users").where("username", username).first().then(user => {
+            if (user && bcrypt.compareSync(password, user.password)) {
+                const token = generateToken(user);
+                res.status(200).json({message: `Welcome, ${user.username}!`, token});
+            } else {
+                res.status(401).json({error: "Invalid credentials."})
+            }
+        }).catch(err => {
+            res.status(500).json({error: "There was an error logging in."});
+        })
+    } else {
+        res.status(404).json({error: "Provide a username and password."})
+    }
+});
 
 server.get("/api/users", (req, res) => {
   db("users")
@@ -62,6 +79,18 @@ server.get("/api/users", (req, res) => {
         .json({ error: "There was an error retrieving the data." });
     });
 });
+
+function generateToken(user) {
+    const payload = {
+        subject: user.id,
+        username: user.username
+    };
+    const options = {
+        expiresIn: "1 hour"
+    };
+
+    return jwt.sign(payload, secret, options);
+}
 
 const port = process.env.PORT || 5000;
 server.listen(port, () => {
