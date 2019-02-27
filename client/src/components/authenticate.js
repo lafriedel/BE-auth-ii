@@ -16,6 +16,19 @@ const authenticate = UserList => FormView =>
       }
     };
 
+    componentDidMount() {
+        const token = localStorage.getItem("token");
+        if (token && token !== "") {
+            this.setState({
+                ...this.state,
+                userLoggedIn: true
+            })
+            this.props.history.push("/users");
+        } else {
+            this.props.history.push("/login");
+        }
+    }
+
     formChange = e => {
       this.setState({
         ...this.state,
