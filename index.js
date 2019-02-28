@@ -3,12 +3,13 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const knex = require("knex");
-const knexConfig = require("./knexfile");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const server = express();
-const db = knex(knexConfig.development);
+const dbEnv = process.env.DB_ENV || "development";
+const knexConfig = require("./knexfile")[dbEnv];
+const db = knex(knexConfig);
 
 const secret =
   process.env.SECRET || "peel bananas from the bottom to reduce stringing";
@@ -27,13 +28,11 @@ server.post("/api/register", (req, res) => {
   if (newUser) {
     const hash = bcrypt.hashSync(newUser.password, 10);
     newUser.password = hash;
-    console.log(newUser);
 
     db("users")
       .insert(newUser)
       .then(userId => {
         const [id] = userId;
-        console.log(id);
         db("users")
           .where("id", id)
           .first()
