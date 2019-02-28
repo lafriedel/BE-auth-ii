@@ -4,6 +4,14 @@ import axios from "axios";
 import FormView from "./FormView";
 import UserList from "./UserList";
 
+axios.interceptors.request.use(
+  function(options) {
+    options.headers.authorization = localStorage.getItem("token");
+
+    return options;
+  }
+)
+
 const authenticate = UserList => FormView =>
   class extends React.Component {
     state = {
