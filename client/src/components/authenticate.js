@@ -52,11 +52,15 @@ const authenticate = UserList => FormView =>
       axios
         .post("http://localhost:8000/api/login", this.state.user)
         .then(res => {
-          const token = res.data.token;
-          localStorage.setItem("token", token);
+          localStorage.setItem("token", res.data.token);
           this.setState({
             ...this.state,
-            userLoggedIn: true
+            userRegistered: false,
+            user: {
+              username: "",
+              password: "",
+              department: ""
+            }
           });
           this.props.history.push("/users")
         })
@@ -83,7 +87,8 @@ const authenticate = UserList => FormView =>
     }
 
     render() {
-      return this.state.userLoggedIn ? (
+      const token = localStorage.getItem("token");
+      return token ? (
         <Route
           path="/users"
           render={props => (
