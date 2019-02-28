@@ -57,9 +57,9 @@ const authenticate = UserList => FormView =>
             ...this.state,
             userRegistered: false,
             user: {
-              username: "",
+              username: res.data.user.username,
               password: "",
-              department: ""
+              department: res.data.user.department
             }
           });
           this.props.history.push("/users")
@@ -92,7 +92,7 @@ const authenticate = UserList => FormView =>
         <Route
           path="/users"
           render={props => (
-            <UserList {...props} username={this.state.username} />
+            <UserList {...props} user={this.state.user} />
           )}
         />
       ) : (

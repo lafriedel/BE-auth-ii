@@ -11,7 +11,7 @@ class UserList extends React.Component {
     axios.get("http://localhost:8000/api/users").then(res => {
       console.log(res.data);
       this.setState({
-        users: res.data
+        users: res.data.filter(u => u.department === this.props.user.department)
       });
     });
   }

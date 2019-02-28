@@ -52,26 +52,33 @@ server.post("/api/register", (req, res) => {
 });
 
 server.post("/api/login", (req, res) => {
-    let { username, password } = req.body;
+  let { username, password } = req.body;
 
-    if (username && password) {
-        db("users").where("username", username).first().then(user => {
-            if (user && bcrypt.compareSync(password, user.password)) {
-                const token = generateToken(user);
-                res.status(200).json({message: `Welcome, ${user.username}!`, token});
-            } else {
-                res.status(401).json({error: "You shall not pass!"})
-            }
-        }).catch(err => {
-            res.status(500).json({error: "There was an error logging in."});
-        })
-    } else {
-        res.status(404).json({error: "Provide a username and password."})
-    }
+  if (username && password) {
+    db("users")
+      .where("username", username)
+      .first()
+      .then(user => {
+        const { username, department } = user;
+        if (user && bcrypt.compareSync(password, user.password)) {
+          const token = generateToken(user);
+          res.status(200).json({ user: {username, department}, token });
+        } else {
+          res.status(401).json({ error: "You shall not pass!" });
+        }
+      })
+      .catch(err => {
+        res.status(500).json({ error: "There was an error logging in." });
+      });
+  } else {
+    res.status(404).json({ error: "Provide a username and password." });
+  }
 });
 
 server.get("/api/users", authorize, (req, res) => {
+
   db("users")
+    .select("users.id", "users.username", "users.department")
     .then(list => {
       res.status(200).json(list);
     })
@@ -83,30 +90,30 @@ server.get("/api/users", authorize, (req, res) => {
 });
 
 function generateToken(user) {
-    const payload = {
-        subject: user.id,
-        username: user.username
-    };
-    const options = {
-        expiresIn: "1 hour"
-    };
+  const payload = {
+    subject: user.id,
+    username: user.username
+  };
+  const options = {
+    expiresIn: "1 hour"
+  };
 
-    return jwt.sign(payload, secret, options);
+  return jwt.sign(payload, secret, options);
 }
 
 function authorize(req, res, next) {
-    const token = req.headers.authorization;
-    if (token) {
-        jwt.verify(token, secret, (err, decodedToken) => {
-            if (err) {
-                res.status(401).json({error: "You shall not pass!"})
-            } else {
-                next();
-            }
-        })
-    } else {
-        res.status(401).json({error: "You shall not pass!"})
-    }
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, secret, (err, decodedToken) => {
+      if (err) {
+        res.status(401).json({ error: "You shall not pass!" });
+      } else {
+        next();
+      }
+    });
+  } else {
+    res.status(401).json({ error: "You shall not pass!" });
+  }
 }
 
 const port = process.env.PORT || 5000;
