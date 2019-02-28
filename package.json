@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon"
+    "server": "nodemon",
+    "start": "node index.js"
   },
   "repository": "https://github.com/lafriedel/auth-ii.git",
   "author": "Leigh-Ann Friedel <leigh.ann.friedel@gmail.com>",
