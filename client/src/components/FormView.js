@@ -4,7 +4,7 @@ import LoginForm from "./LoginForm";
 import { Link, Route } from "react-router-dom";
 
 const FormView = props => {
-  const { user, formChange, login } = props;
+  const { user, formChange, login, register, userRegistered } = props;
   return (
     <>
       <Link to="/register">
@@ -16,13 +16,13 @@ const FormView = props => {
       <Route
         exact
         path="/register"
-        render={props => <RegisterForm {...props} user={user} formChange={formChange} />}
+        render={props => <RegisterForm {...props} user={user} formChange={formChange} register={register} />}
       />
       <Route
         exact
         path="/login"
         render={props => (
-          <LoginForm {...props} user={user} formChange={formChange} login={login} />
+          <LoginForm {...props} user={user} formChange={formChange} login={login} userRegistered={userRegistered} />
         )}
       />
     </>

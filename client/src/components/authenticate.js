@@ -48,13 +48,31 @@ const authenticate = UserList => FormView =>
           localStorage.setItem("token", token);
           this.setState({
             ...this.state,
-            userLoggedIn: true,
-            userRegistered: true
+            userLoggedIn: true
           });
           this.props.history.push("/users")
         })
         .catch(err => console.log(err));
     };
+
+    register = e => {
+        e.preventDefault();
+        axios
+            .post("http://localhost:8000/api/register", this.state.user)
+            .then(res => {
+                this.setState({
+                    ...this.state,
+                    userRegistered: true,
+                    user: {
+                        username: "",
+                        department: "",
+                        password: ""
+                    }
+                });
+                this.props.history.push("/login");
+            })
+            .catch(err => console.log(err));
+    }
 
     render() {
       return this.state.userLoggedIn ? (
@@ -70,6 +88,8 @@ const authenticate = UserList => FormView =>
           user={this.state.user}
           formChange={this.formChange}
           login={this.login}
+          register={this.register}
+          userRegistered={this.state.userRegistered}
         />
       );
     }
